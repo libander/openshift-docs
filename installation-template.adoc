@@ -1,0 +1,77 @@
+////
+Base the file name and the ID on the module title. For example:
+* file name: proc_installing-your-component.adoc
+* ID: [id="installing-your-component_{context}"]
+* Title: = Installing {your-component}
+
+Add the following attribute before the module ID:
+:_mod-docs-content-type: PROCEDURE
+
+The ID is an anchor that links to the module. Avoid changing it after the module has been published to ensure existing links are not broken. The `context` attribute enables module reuse. Every module ID includes {context}, which ensures that the module has a unique ID even if it is reused multiple times in an assembly file.
+////
+
+[id="installing-your-component_{context}"]
+
+= Installing {your-component}
+////
+Start the title of a procedure module with a gerund, such as Creating, Installing, or Configuring.
+
+Be sure to include a line break between the title and the module introduction.
+
+Attributes are reusable pieces of text, like variables. They help maintain consistency and make bulk updates easier. Use attributes whenever possible, especially for product names, URLs, or repeated text blocks. Attributes are located at _attributes/common-attributes.adoc
+////
+
+This module guides you through the installation of {your-component}, detailing each step required to ensure a successful setup. By installing {your-component}, you enhance your {Product-title} environment by [describe functionality or improvement]. This process is intended for system administrators with appropriate privileges and a basic understanding of {Product-title} operations.
+
+.Prerequisites
+
+* Administrative access to the {Product-title} cluster is required.
+* The target namespace for the installation should be prepared in advance.
+* Ensure network access to the repository hosting the {your-component} installation package.
+
+////
+If you have only one prerequisite, list it as a single bullet point.
+Do not write prerequisites in the imperative.
+You can include links to more information about the prerequisites.
+Delete the .Prerequisites section title and bullets if the module has no prerequisites.
+////
+
+.Procedure
+
+. Download the {your-component} installation package from the official product page.
+.. Navigate to `https://example.com/{your-component}/downloads`.
+.. Select the appropriate version for your {Product-title} installation and download the package.
+
+. Deploy {your-component} to your {Product-title} cluster.
+.. Log in to your {Product-title} cluster using the CLI:
+----
+$ oc login --token=my-token --server=my-server
+----
+.. Apply the {your-component} installation manifest:
+----
+$ oc apply -f {your-component}.yaml
+----
+.. Monitor the deployment status until all resources are correctly instantiated:
+----
+$ oc get pods -n {your-component}-namespace
+----
+
+.Verification
+
+* Verify that {your-component} is running correctly by checking the status of the pods:
+----
+$ oc get pods -n {your-component}-namespace
+----
+* The output should show all {your-component} pods in the 'Running' state without restarts.
+
+[role="_additional-resources"]
+.Next steps
+
+* After installing {your-component}, consider configuring additional features to maximize its capabilities [link to configuration guide].
+* Review the security settings to ensure that {your-component} is properly secured [link to security settings].
+
+[role="_additional-resources"]
+.Additional resources
+
+* For troubleshooting installation issues, refer to the [{your-component} Troubleshooting Guide](link to troubleshooting guide).
+* To learn more about optimizing {your-component}, see the [{your-component} Optimization Techniques](link to optimization techniques).
