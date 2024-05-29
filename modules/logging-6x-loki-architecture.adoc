@@ -1,0 +1,15 @@
+// Module included in the following assemblies:
+//
+
+
+:_mod-docs-content-type: CONCEPT
+[id="logging-6x-loki-architecture_{context}"]
+= Loki Architecture: Understanding the Components
+
+Loki's architecture is comprised of several key components, each playing a specific role in log processing and storage:
+
+* **Distributor:** Receives incoming logs from Vector agents and distributes them across multiple Ingesters.
+* **Ingester:**  Responsible for building chunks of log data and creating an index for efficient retrieval.
+* **Querier:** Processes incoming log queries and fetches relevant log data from the storage backend.
+* **Query Frontend:**  Manages and coordinates incoming queries, distributes the workload across Queriers, and returns the results to the user.
+* **Storage Backend:** Stores the log chunks and indexes, often using object storage services like S3 or GCS.

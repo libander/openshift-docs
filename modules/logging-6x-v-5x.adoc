@@ -1,0 +1,33 @@
+// Module included in the following assemblies:
+//
+
+
+:_mod-docs-content-type: PROCEDURE
+[id="logging-6x-v-5x_{context}"]
+= OpenShift Logging 6.0: Key Differences from Previous Versions (5.0-5.9)
+
+OpenShift Logging 6.0 introduces several significant changes compared to previous versions, streamlining the logging architecture and enhancing the overall logging experience.
+
+== Simplified Architecture
+
+* **Removal of Elasticsearch and Fluentd:**  OpenShift Logging 6.0 eliminates Elasticsearch and Fluentd as default components, streamlining the architecture for improved performance and reduced complexity.
+* **Focus on Loki and Vector:** The logging stack now centers around Loki for log aggregation and Vector for log collection and forwarding, providing a more unified and efficient solution.
+
+== Enhanced Scalability and Performance
+
+* **Horizontal Scalability:** Loki's architecture allows for seamless horizontal scaling, ensuring that the logging system can handle the growing demands of large-scale OpenShift deployments.
+* **Improved Query Performance:** Loki's indexing and query mechanisms are optimized for speed, enabling faster log retrieval and analysis.
+
+== Enhanced User Experience
+
+* **Streamlined Configuration:** The removal of Elasticsearch and Fluentd simplifies the configuration process, making it easier to set up and manage your logging infrastructure.
+* **Improved Integration:** Loki and Vector offer tighter integration with OpenShift, providing a more seamless and native logging experience.
+
+== Additional Enhancements
+
+* **Expanded Log Sources:** Vector's flexibility allows you to collect logs from an even wider range of sources, providing greater visibility into your OpenShift environment.
+* **Enhanced Log Processing:** Vector's processing capabilities have been expanded, enabling you to perform more complex log transformations and filtering.
+
+== Transitioning to OpenShift Logging 6.0
+
+If you're upgrading from a previous version of OpenShift Logging, the transition to 6.0 will involve migrating your existing log data and reconfiguring your logging pipeline to utilize Loki and Vector.

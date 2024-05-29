@@ -1,0 +1,15 @@
+:_mod-docs-content-type: ASSEMBLY
+include::_attributes/common-attributes.adoc[]
+[id="logging-6x"]
+= Logging 6.0
+:context: logging-6x
+
+toc::[]
+
+include::modules/logging-6x-v-5x.adoc[leveloffset=+1]
+
+include::modules/logging-elastic-to-loki-migration.adoc[leveloffset=+1]
+
+include::modules/logging-6x-about.adoc[leveloffset=+1]
+
+include::modules/logging-6x-loki-architecture.adoc[leveloffset=+1]

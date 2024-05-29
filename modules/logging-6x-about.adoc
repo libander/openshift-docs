@@ -1,0 +1,28 @@
+// Module included in the following assemblies:
+//
+
+
+:_mod-docs-content-type: CONCEPT
+[id="logging-6x-about_{context}"]
+
+
+= What is OpenShift Logging?
+
+OpenShift Logging provides a comprehensive log management solution integrated into your OpenShift clusters. It utilizes:
+
+* **Loki:** A horizontally scalable, highly available log aggregation system optimized for efficient storage and retrieval of log data in dynamic OpenShift environments.
+* **Vector:** A lightweight, high-performance log forwarding agent that connects your application and infrastructure logs to Loki, offering a flexible and customizable way to collect, process, and route log data.
+
+== How OpenShift Logging Works
+
+1. **Log Collection:** Vector agents, deployed on each node in your cluster, collect logs from various sources, including containers, system components, and applications.
+2. **Log Processing (Optional):** Vector can filter, enrich, and transform log data before forwarding it to Loki.
+3. **Log Aggregation:** Loki receives the processed log data from Vector and stores it efficiently for later retrieval.
+4. **Log Querying & Analysis:**  Use Loki's powerful query language to search, filter, and analyze logs, gaining valuable insights into your OpenShift environment.
+
+== Visualizing Logs in OpenShift
+
+OpenShift Logging provides multiple ways to visualize and explore your log data:
+
+* **OpenShift Web Console:** The integrated Logs page offers a user-friendly interface for searching, filtering, and viewing logs directly within the OpenShift console.
+* **Grafana:** OpenShift Logging integrates seamlessly with Grafana, enabling you to create rich, customizable dashboards to visualize and correlate log data with metrics and other observability data.
