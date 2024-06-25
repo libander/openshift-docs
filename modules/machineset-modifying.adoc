@@ -281,4 +281,4 @@ NAME                        PHASE           TYPE         REGION      ZONE       
 <machine_name_updated_1>    Running         m6i.xlarge   us-west-1   us-west-1a   6m30s
 <machine_name_updated_2>    Running         m6i.xlarge   us-west-1   us-west-1a   6m30s
 //end::MAPI[]
-----
+---- 
