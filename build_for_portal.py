@@ -125,13 +125,12 @@ log = logging.getLogger("build")
 
 def setup_parser():
     """
-    Sets up an argument parser using the `argparse` module to define and validate
-    command-line options for a program, including distribution, all-in-one mode,
-    title, product, version, author, upstream URL, branch, and other parameters.
+    Initializes an argument parser using argparse and defines various command-line
+    arguments, including options for specifying distribution, version, and branch
+    information, as well as options for controlling the build process.
 
     Returns:
-        argparseArgumentParser: An object that encapsulates the command-line-specific
-        runtime data and behavior.
+        argparseArgumentParser: Used to parse command line arguments.
 
     """
     parser = argparse.ArgumentParser(
@@ -396,21 +395,22 @@ def generate_master_entry(
 
     def dir_callback(dir_node, parent_dir, depth):
         """
-        Recursively traverses directory trees and builds a list of directory
-        entries, formatting each entry with indentation according to its depth.
-        The inclusion of an entry depends on either a specified include name or a
-        minimum recursion depth.
+        Processes a directory node, appending its name to the `master_entries`
+        list if a specified condition is met (either the `include_name` variable
+        is True or the directory depth exceeds zero).
 
         Args:
-            dir_node (Dict[str, any]): An entry from the directory tree being
-                traversed, representing a single node in the tree, with key-value
-                pairs where 'Name' corresponds to the name of the directory or file.
-            parent_dir (str): Referenced within the callback to construct the
-                directory path in the `master_entries` list, but it is not used
-                directly in this particular code snippet.
-            depth (int): 0-based, representing the current level of recursion when
-                processing directory nodes. It is used to indent the output based
-                on the nesting level of directories.
+            dir_node (Dict[str, object]): Expected to contain information about a
+                directory node in a file system hierarchy, including the name of
+                the directory.
+            parent_dir (str | None): Passed from the parent function. It is not
+                used within the function and can be inferred to represent the path
+                or name of the directory that contains the current dir_node being
+                processed.
+            depth (int): 0-indexed, indicating the current directory depth during
+                recursive traversal. Its value increases by 1 for each nested
+                directory level. This information is used to format the output
+                string with indentation.
 
         """
         if include_name or depth > 0:
@@ -420,21 +420,20 @@ def generate_master_entry(
 
     def topic_callback(topic_node, parent_dir, depth):
         """
-        Generates an Asciidoctor include statement based on a topic node, file
-        path, and depth. It appends this statement to the `master_entries` list,
-        potentially prepending and appending comment lines depending on whether
-        the all-in-one mode is enabled and the file is in the COMMENT_FILES set.
+        Constructs a file path and an Asciidoctor include statement based on input
+        parameters, then appends these to the `master_entries` list depending on
+        certain conditions regarding the presence of files in a specific directory
+        and the value of the `all_in_one` variable.
 
         Args:
-            topic_node (Dict[str, str]): Assumed to contain key-value pairs
-                representing information about a topic file or node in an Asciidoctor
-                book.
-            parent_dir (str): Used as part of a file path. It is joined with the
-                value of `topic_node["File"] + ".adoc"` to create the full path
-                to an adoc file.
-            depth (int): Used to adjust the level offset for an included file.
-                This adjustment affects the hierarchy level of the included content
-                within the output book.
+            topic_node (Dict): Expected to contain information about a topic,
+                including its name and associated file path.
+            parent_dir (str): Used to specify the directory path for creating a
+                full file path by joining it with the "File" attribute from the
+                `topic_node` dictionary and appending ".adoc".
+            depth (int): Used to specify the level offset for including a file
+                with "include::" syntax in the master book file, indicating the
+                depth of nesting of the included topic.
 
         """
         book_file_path = os.path.join(parent_dir, topic_node["File"] + ".adoc")
@@ -515,20 +514,21 @@ def copy_images(node, src_path, dest_dir, distro):
 
     def dir_callback(dir_node, parent_dir, depth):
         """
-        Recursively traverses a directory tree, identifying directories with an
-        "images" subdirectory and copying all files from that subdirectory to a
-        specified destination directory (`dest_dir`).
+        Traverses a directory tree and copies image files from subdirectories to
+        a specified destination directory (`dest_dir`). It checks if a source
+        directory exists, lists its contents, and then recursively copies image
+        files to the destination directory.
 
         Args:
-            dir_node (Dict): Expected to contain key-value pairs that represent a
-                directory node in a file system hierarchy, with "Dir" being one
-                of its keys.
-            parent_dir (str): Used to construct the full path of the current
-                directory node by joining it with the "Dir" attribute of the
-                `dir_node`. This provides the base directory for further operations.
-            depth (int): Used to indicate the current level of recursion while
-                traversing directory structure. It is not explicitly used within
-                the function, but it is likely intended for logging or printing purposes.
+            dir_node (Dict): Expected to be a dictionary containing information
+                about a directory node. The dictionary contains at least one key
+                "Dir" representing the name of the directory.
+            parent_dir (str): Used to construct the full path of a directory node.
+                It provides the path up to the current directory being processed,
+                allowing for the construction of the full path of the directory node.
+            depth (int): Not explicitly used within the function. It seems to be
+                intended for use in recursive directory traversal or recursion
+                depth tracking, but its purpose remains unclear without further context.
 
         """
         node_dir = os.path.join(parent_dir, dir_node["Dir"])
@@ -550,21 +550,19 @@ def copy_files(node, book_src_dir, src_dir, dest_dir, info):
 
     def dir_callback(dir_node, parent_dir, depth):
         """
-        Creates a destination directory path by joining the `dest_dir`, `parent_dir`,
-        and `dir_node`'s "Dir" attribute. It then ensures that the directory exists
-        by calling the `ensure_directory` function with this path as an argument.
+        Creates a destination directory path by joining the base `dest_dir`, the
+        `parent_dir`, and the current `dir_node`'s "Dir" value. It then ensures
+        that this directory exists using the `ensure_directory` function.
 
         Args:
-            dir_node (Dict): Expected to have key-value pairs representing a
-                directory node, where "Dir" is a string representing the name of
-                the directory and other keys represent additional information about
-                the directory.
-            parent_dir (str): Used to construct the full destination directory
-                path by joining it with the `dest_dir` and `dir_node["Dir"]`. It
-                represents the parent directory of the current directory being processed.
-            depth (int): Used to specify the current level of depth in the directory
-                tree being traversed. It helps calculate the path of each file or
-                subdirectory.
+            dir_node (Dict): Expected to contain key-value pairs representing
+                directory information. Its keys likely include "Dir", "Size" or
+                other relevant directory details.
+            parent_dir (str): Used as part of constructing the path for the
+                destination directory by joining it with the `dest_dir` and
+                `dir_node["Dir"]`. It represents the current parent directory.
+            depth (int): Used to track the level of recursion while traversing the
+                directory hierarchy.
 
         """
         node_dest_dir = os.path.join(dest_dir, parent_dir, dir_node["Dir"])
@@ -572,19 +570,18 @@ def copy_files(node, book_src_dir, src_dir, dest_dir, info):
 
     def topic_callback(topic_node, parent_dir, depth):
         """
-        Copies a specific file from a source directory to a destination directory
-        based on the provided topic node and parent directory information, preserving
-        the file name and extension.
+        Copies an .adoc file from a source directory to a destination directory
+        based on information provided by `topic_node`, which contains the file
+        name and parent directory path. It also handles directories accordingly.
 
         Args:
-            topic_node (Dict[any, any]): Assumed to contain information about a
-                topic node, including the "File" key that specifies the name of
-                an adoc file.
-            parent_dir (str): Used to construct directory paths for source and
-                destination files related to the topic node being processed.
-            depth (int): Used to calculate the directory path for destination files
-                based on the parent directory. It specifies the current level of
-                nesting within the topic tree.
+            topic_node (Dict[str, str | int]): Expected to contain information
+                about a topic node, including its file name and possibly other attributes.
+            parent_dir (str): Used to construct the source directory path
+                (`node_src_dir`) and destination directory path (`node_dest_dir`).
+                It represents the parent directory of the topic node being processed.
+            depth (int): Used to specify the current directory level being processed
+                while copying files from source directory to destination directory.
 
         """
         node_src_dir = os.path.join(src_dir, parent_dir)
@@ -766,31 +763,33 @@ def scrub_file(info, book_src_dir, src_file, tag=None, cwd=None):
 
 def scrub_content(content, info, book_src_dir, src_file, tag=None, cwd=None):
     """
-    Preprocesses and cleans content from a source file by removing unwanted lines,
-    replacing duplicate IDs with new ones, and correcting incorrect links to conform
-    to the format required for the target output.
+    Cleans up content from a file by identifying and replacing IDs with corresponding
+    titles, fixing links, and handling duplicates and incorrect links, ultimately
+    returning the scrubbed content as a string.
 
     Args:
-        content (str): The text content to be processed for scrubbing purposes.
-            It can be considered as a block of text that needs to be cleaned up
-            according to specific criteria.
-        info (Dict[str, any]): Used to store information related to book processing,
-            such as file directories, IDs for titles, mapping of files to IDs,
-            whether to process all files in one pass, and incorrect links.
-        book_src_dir (str): Expected to be the directory path of the book source
-            files where the content being scrubbed originates from.
-        src_file (str): Used as part of file paths within the content being
-            processed. It is also used to look up information from other data
-            structures, such as TITLE_IDS, FILE_TO_ID_MAP, DUPLICATE_IDS, and INCORRECT_LINKS.
-        tag (str | None): Optional. Its presence or absence does not affect the
-            core functionality of the function, indicating it may be used elsewhere
-            in the codebase for logging or reporting purposes.
-        cwd (str | None): Used to specify the current working directory for file
-            operations, if provided, otherwise it defaults to None.
+        content (str): Expected to be the content of a file from which links are
+            to be extracted or modified.
+        info (Dict[str, Union[bool, List[str], str | int]]): Used to hold information
+            about the source file, including whether it's part of an all-in-one
+            book, mapping of files to IDs, duplicate ID replacements, and incorrect
+            link replacements.
+        book_src_dir (str): Used as part of the construction of the base source
+            file name by replacing info["src_dir"] with book_src_dir. It represents
+            the directory path to the book's source files.
+        src_file (str): The source file name. It is used to replace the base path
+            with `/` from the source file name, which is then used to get the
+            corresponding title IDs for scrubbing content.
+        tag (str | None): Optional by default. It appears to be used for fixing
+            links, as it is passed along with other parameters to the `fix_links`
+            function without being used within the main scrubbing logic.
+        cwd (str | None): Used to specify the current working directory for the
+            purpose of resolving file paths. If not provided, it defaults to None.
 
     Returns:
-        str: The scrubbed content after processing the input content according to
-        certain rules and conditions.
+        str: The processed and sanitized content after cleaning, replacing duplicate
+        IDs, fixing incorrect links, and performing other transformations based
+        on input parameters.
 
     """
     base_src_file = src_file.replace(info["src_dir"] + "/", "")
@@ -879,26 +878,25 @@ def fix_links(content, info, book_src_dir, src_file, tag=None, cwd=None):
 def dir_to_book_name(dir,src_file,info):
     # find a book name by the directory
     """
-    Searches for a specific directory (`dir`) within a list of book nodes
-    (`info["book_nodes"]`) and returns the corresponding book name if found. If
-    not found, it logs an error message and appends the error to a list before
-    returning the directory name.
+    Takes a directory path, source file name, and information about book nodes as
+    input. It searches for a book node with a matching directory path and returns
+    its name if found; otherwise, it logs an error message and returns the directory
+    path.
 
     Args:
-        dir (str): Used to specify the directory name. It is compared with each
-            book's "Dir" attribute to find a match within the list of books defined
-            in the `info` dictionary.
-        src_file (str): Used as a placeholder in an error message when a book is
-            not found for a given directory. It is intended to provide context
-            about where the error occurred.
-        info (Dict[str, Dict[str, str]]): Assumed to be an object containing
-            information about book directories, represented as dictionaries within
-            a dictionary with key "book_nodes".
+        dir (str): Used to match with the "Dir" key in the dictionary "book_nodes".
+            It represents the directory name for which the corresponding book name
+            needs to be retrieved.
+        src_file (str): Used as a placeholder to format the error message when a
+            book is not found for a directory.
+        info (Dict): Expected to contain a key named "book_nodes". The value
+            associated with this key should be a list of dictionaries, where each
+            dictionary represents a book node.
 
     Returns:
-        str|None: 1) a book name if found, or 2) an error message indicating that
-        no book was found for the given directory, or 3) the original directory
-        path if no book is found and there are no errors.
+        str|None: 1) the name of a book if it's found in the "book_nodes" list for
+        a matching directory; or 2) the directory itself as a string if no matching
+        book is found; or None if an error occurs.
 
     """
     for book in info["book_nodes"]:
@@ -1052,15 +1050,23 @@ def remove_conditional_content(content, info, tag=None):
     for comment in COMMENT_CONTENT_RE.finditer(content):
         content = content.replace(comment.group(0), "")
 
-    # Remove content outside of tags
+# Remove content outside of tags
     if tag is not None:
-        for tag_match in TAG_CONTENT_RE.finditer(content):
-            tag_text = tag_match.group(0)
-            tag_label = tag_match.group(1)
-            if tag_label == tag:
-                # Tag matches, so only use the content in the tag
-                content = tag_text
+        # Handle multiple tags separated by commas or semicolons
+        tags = [t.strip() for t in re.split(r'[;,]', tag)]
+        filtered_content = ""
 
+        for tag_match in TAG_CONTENT_RE.finditer(content):
+            tag_text = tag_match.group(2)  # Content between the tag markers
+            tag_label = tag_match.group(1)
+            if tag_label in tags:
+                # Tag matches, so include this tagged content
+                filtered_content += tag_text
+
+        # Replace the original content with filtered content if any tags matched
+        if filtered_content:
+            content = filtered_content
+            
     return content
 
 
@@ -1072,19 +1078,18 @@ def collect_existing_ids(node, distro, path):
 
     def topic_callback(topic_node, parent_dir, depth):
         """
-        Takes a topic node, parent directory, and depth as inputs, extracts file
-        IDs from an ADOC source file, and appends these IDs to a list named `book_ids`.
+        Extracts file IDs from an ADOC source file, based on a topic node and
+        parent directory. It appends these IDs to a collection named `book_ids`,
+        allowing for aggregation of file information across multiple topics.
 
         Args:
-            topic_node (Dict): Assumed to represent a topic node, which contains
-                attributes such as "File" that refer to an Asciidoc file in a
-                parent directory.
-            parent_dir (str): A directory path that serves as the parent directory
-                for constructing the source file path by joining it with the topic
-                node's "File" attribute.
-            depth (int): Passed to this function, possibly indicating a level of
-                nesting or recursion for traversing topic nodes. Its exact purpose
-                and usage are dependent on the context of the code.
+            topic_node (Dict): Expected to contain information about a topic,
+                including the file name as "File" key.
+            parent_dir (str): Used to specify the directory path that contains
+                source files. It serves as a prefix for constructing full paths
+                of files related to a topic node.
+            depth (int): Used to specify the level of recursion for traversing the
+                directory hierarchy when processing files with "File" extension.
 
         """
         src_file = os.path.join(parent_dir, topic_node["File"] + ".adoc")
@@ -1104,19 +1109,18 @@ def build_file_to_id_map(node, distro, existing_ids, path=""):
 
     def topic_callback(topic_node, parent_dir, depth):
         """
-        Builds a mapping between source files and their corresponding IDs based
-        on topic names. It takes three parameters: a topic node, a parent directory,
-        and depth. The function generates an ID for each file using the topic name
-        and adds it to a file-to-ID map.
+        Maps a source file to an ID by joining the parent directory with the topic
+        node's file name and extension, then calls another function to build the
+        file ID based on the topic name and existing IDs.
 
         Args:
             topic_node (Dict[str, Any]): Expected to contain information about a
-                topic, such as its name, file path, and other relevant details
-                that are used to build an ID for each topic.
-            parent_dir (str): Used to specify the directory where the topic files
-                are stored. It is used to construct the full path of the source
-                file using the `os.path.join` method.
-            depth (int): Used to specify the depth level of the topic node.
+                topic, including its name and file path.
+            parent_dir (str): Used as the base directory for joining with other
+                directories or files to form full paths, such as the source file
+                path (`src_file`).
+            depth (int): Used to track the hierarchical structure of the topics.
+                It helps to identify the position of each topic within its hierarchy.
 
         """
         src_file = os.path.join(parent_dir, topic_node["File"] + ".adoc")
@@ -1259,9 +1263,9 @@ def sync_directories(src_dir, dest_dir, ignore=None):
 def _sync_directories_dircmp(dcmp):
     # Remove files that only exist in the dest directory
     """
-    Synchronizes two directories by removing files and subdirectories in `right`
-    that exist only there, copying or moving files and subdirectories in common
-    to match those in `left`, and recursively calling itself for subdirectories.
+    Recursively compares two directories using `dircmp`. It removes files and
+    subdirectories that are present on the right side but not on the left, and
+    copies files and subdirectories from the left to the right if they exist or don't.
 
     """
     for filename in dcmp.right_only:
@@ -1314,24 +1318,22 @@ def commit_and_push_changes(git_dir, git_branch, git_upstream_branch):
 def parse_repo_config(config_file, distro, version):
     # Make sure the repo config file exists
     """
-    Parses a configuration file using the configparser module and extracts repository
-    URLs for a specified distribution and version. It checks if the file exists,
-    reads it, and returns a dictionary with the extracted URLs.
+    Reads a configuration file and extracts relevant information for a specific
+    repository based on the provided distro and version, returning a dictionary
+    with the extracted data.
 
     Args:
-        config_file (str): Expected to be the path to a configuration file. It
-            specifies the source from which the repository configuration should
-            be loaded.
-        distro (str): Used to construct the name of the section in the configuration
-            file where repository URLs are stored.
-        version (str): Used as part of the section name for parsing configuration
-            files, specifically in combination with the `distro` parameter to form
-            a unique identifier for the configuration section.
+        config_file (str): Used as the path to a configuration file that contains
+            information about repositories.
+        distro (str): Used as part of the section name that it attempts to read
+            from the configuration file along with the version number.
+        version (str): Used as part of a section name to identify a specific
+            configuration section within the config file.
 
     Returns:
-        Dict[str,str]: A mapping from string keys to strings values representing
-        repository URLs parsed from a configuration file for a specific distribution
-        and version.
+        Dict[str,str]: A dictionary where keys are strings and values are also
+        strings. This dictionary represents repository URLs for given distro and
+        version.
 
     """
     if not os.path.isfile(config_file):
@@ -1352,9 +1354,9 @@ def parse_repo_config(config_file, distro, version):
 
 def main():
     """
-    Builds Drupal files for a given distribution and version by fetching upstream
-    sources, parsing build configuration, filtering nodes, building master files,
-    reformatting, and pushing changes to GitLab if required.
+    Builds Drupal files for a specified distribution and version from a build
+    configuration file, fetches upstream sources if necessary, cleans and creates
+    directories, and pushes changes to GitLab repositories if required.
 
     """
     parser = setup_parser()
