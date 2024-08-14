@@ -1,0 +1,74 @@
+# YAML supports multiple documents per file, separated by ---
+# YAML only support single line comments, and ignores anything after a #
+# YAML does not like tabs. Don't use them. Exception for inside a quoted string.
+
+---
+# AzureMonitor CLF Sample
+apiVersion: observability.openshift.io/v1
+kind: ClusterLogForwarder # <1>
+metadata:
+  name: collector
+spec:
+  managementState: Managed
+  inputs:
+  - name: selected-app # <2>
+    application:
+      excludes:
+        - container: "*"
+          namespace: "*aosqe*"
+      includes:
+        - container: "*"
+          namespace: "*user1*"
+      selector:
+        matchLabels:  {"run": "centos-logtest"}
+      tuning:
+        rateLimitPerContainer:
+          maxRecordsPerSecond: 20
+    type: application
+  - name: infrastructure
+    type: infrastructure
+    infrastructure:
+      sources:
+       - node
+       - container
+  - name: audit
+    type: audit
+    audit:
+      sources:
+      - auditd
+      - kubeAPI
+      - openshiftAPI
+      - ovn
+  filters:
+  - name: drop-logs
+    type: drop
+    drop:
+    - test:
+      - field: .kubernetes.namespace_name
+        matches: "openshift-kube*"
+  outputs:
+    - azureMonitor:
+        authentication:
+          sharedKey:
+            key: shared_key
+            secretName: azuremonitor-secret
+        azureResourceId: "b36631b9-d82e-4e76-9fb2-3c47630d9744"
+        customerId: "/subscriptions/53b8f551-f0fc-4bea-8cba-6d1fefd54c8a/resourceGroups/anliaz86-rg/providers/Microsoft.OperationalInsights/workspaces/logtest-2024"
+        host: "ods.opinsights.azure.com"
+        logType: ocp_log
+      name: azure-log
+      type: azureMonitor
+  pipelines:
+    - inputRefs:
+        - selected-app
+        - infrastructure
+        - audit
+      name: pipe1
+      filterRefs:
+        - drop-logs
+      outputRefs:
+        - azure-log
+  serviceAccount:
+    name: "logs-collector"
+# <1> Callout test
+# <2> Callout testing
