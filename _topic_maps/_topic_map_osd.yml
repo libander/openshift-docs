@@ -207,7 +207,7 @@ Topics:
   - Name: Diagnosing OpenShift CLI (oc) issues
     File: diagnosing-oc-issues
   - Name: OpenShift Dedicated managed resources
-    File: osd-managed-resources
+    File: sd-managed-resources
     Distros: openshift-dedicated
 ---
 Name: Web console
@@ -375,6 +375,8 @@ Distros: openshift-dedicated
 Topics:
 - Name: Viewing audit logs
   File: audit-log-view
+- Name: Required allowlist IP addresses for SRE cluster access
+  File: rh-required-whitelisted-IP-addresses-for-sre-access
 ---
 Name: Authentication and authorization
 Dir: authentication
@@ -622,7 +624,7 @@ Topics:
   - Name: AWS Elastic Block Store CSI Driver Operator
     File: persistent-storage-csi-ebs
   - Name: AWS Elastic File Service CSI Driver Operator
-    File: osd-persistent-storage-aws-efs-csi
+    File: persistent-storage-csi-aws-efs
   - Name: GCP PD CSI Driver Operator
     File: persistent-storage-csi-gcp-pd
   - Name: GCP Filestore CSI Driver Operator
@@ -1030,8 +1032,9 @@ Topics:
     File: nodes-scheduler-node-affinity
   - Name: Placing pods onto overcommited nodes
     File: nodes-scheduler-overcommit
-  - Name: Controlling pod placement using node taints
-    File: nodes-scheduler-taints-tolerations
+# Per OSDOCS-9791, OSD customers cannot add taints to individual nodes.
+#   - Name: Controlling pod placement using node taints
+#     File: nodes-scheduler-taints-tolerations
   - Name: Placing pods on specific nodes using node selectors
     File: nodes-scheduler-node-selectors
   - Name: Controlling pod placement using pod topology spread constraints
@@ -1465,8 +1468,6 @@ Topics:
     Distros: openshift-origin
   - Name: virtctl and libguestfs
     File: virt-using-the-cli-tools
-  - Name: Web console overview
-    File: virt-web-console-overview
     Distros: openshift-dedicated
 - Name: Installing
   Dir: install
@@ -1697,8 +1698,8 @@ Topics:
   Topics:
   - Name: Backup and restore by using VM snapshots
     File: virt-backup-restore-snapshots
-#  - Name: Backing up and restoring virtual machines
-#    File: virt-backup-restore-overview
+  - Name: Backing up and restoring virtual machines
+    File: virt-backup-restore-overview
 #  - Name: Collecting OKD Virtualization data for community report
 #    File: virt-collecting-virt-data
 #    Distros: openshift-origin

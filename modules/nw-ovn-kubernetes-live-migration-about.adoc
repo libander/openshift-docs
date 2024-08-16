@@ -5,7 +5,9 @@
 [id="nw-ovn-kubernetes-live-migration-about_{context}"]
 = Limited live migration to the OVN-Kubernetes network plugin overview
 
-The limited live migration method is the process in which the OpenShift SDN network plugin and its network configurations, connections, and associated resources, are migrated to the OVN-Kubernetes network plugin without service interruption. It is available for {product-title}, {product-dedicated}, {product-rosa}, and Azure Red Hat OpenShift deployment types. It is not available for HyperShift deployment types. This migration method is valuable for deployment types that require constant service availability and offers the following benefits:
+The limited live migration method is the process in which the OpenShift SDN network plugin and its network configurations, connections, and associated resources, are migrated to the OVN-Kubernetes network plugin without service interruption. It is available for {product-title}.
+// Azure Red Hat OpenShift deployment types will needed added in .z stream.
+It is not available for hosted control plane deployment types. This migration method is valuable for deployment types that require constant service availability and offers the following benefits:
 
 * Continuous service availability
 * Minimized downtime
@@ -35,7 +37,7 @@ The following table provides information about the supported platforms for the l
 | Microsoft Azure (IPI and UPI)                 |&#10003;
 | {rh-openstack-first} (IPI and UPI)            |&#10003;
 | VMware vSphere (IPI and UPI)                  |&#10003;
-| AliCloud (IPI and UPI)                        |&#10003;
+| AliCloud (UPI)                                |&#10003;
 | Nutanix (IPI and UPI)                         |&#10003;
 |===
 
@@ -44,7 +46,7 @@ The following table provides information about the supported platforms for the l
 
 Before using the limited live migration method to the OVN-Kubernetes network plugin, cluster administrators should consider the following information:
 
-* The limited live migration procedure is unsupported for clusters with OpenShift SDN multitenant mode enabled. 
+* The limited live migration procedure is unsupported for clusters with OpenShift SDN multitenant mode enabled.
 
 * Egress router pods block the limited live migration process. They must be removed before beginning the limited live migration process.
 
@@ -67,20 +69,7 @@ During the limited live migration, both OVN-Kubernetes and OpenShift SDN run in 
 ** `InternalTransitSwitchSubnet`
 ** `internalJoinSubnet`
 
-* OVN-Kubernetes reserves the `100.64.0.0/16` and `100.88.0.0/16` IP address ranges. If OpenShift SDN has been configured to use either of these IP address ranges, you must patch them to use a different IP address range before starting the limited live migration.
-
-** `100.64.0.0/16`. This IP address range is used for the `internalJoinSubnet` parameter of OVN-Kubernetes by default. If this IP address range is already in use, enter the following command to update it to a different range, for example, `100.63.0.0/16`:
-+
-[source,terminal]
-----
-$ oc patch network.operator.openshift.io cluster --type='merge' -p='{"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipv4":{"internalJoinSubnet": "100.63.0.0/16"}}}}}'
-----
-** `100.88.0.0/16`. This IP address range is used for the `internalTransSwitchSubnet` parameter of OVN-Kubernetes by default. If this IP address range is already in use, enter the following command to update it to a different range, for example, `100.99.0.0/16`:
-+
-[source,terminal]
-----
-$ oc patch network.operator.openshift.io cluster --type='merge' -p='{"spec":{"defaultNetwork":{"ovnKubernetesConfig":{"ipv4":{"internalTransitSwitchSubnet": "100.99.0.0/16"}}}}}'
-----
+* OVN-Kubernetes reserves the `100.64.0.0/16` and `100.88.0.0/16` IP address ranges. These subnets cannot be overlapped with any other internal or external network. If these IP addresses have been used by OpenShift SDN or any external networks that might communicate with this cluster, you must patch them to use a different IP address range before starting the limited live migration. See "Patching OVN-Kubernetes address ranges" for more information.
 
 * In most cases, the limited live migration is independent of the secondary interfaces of pods created by the Multus CNI plugin. However, if these secondary interfaces were set up on the default network interface controller (NIC) of the host, for example, using MACVLAN, IPVLAN, SR-IOV, or bridge interfaces with the default NIC as the control node, OVN-Kubernetes might encounter malfunctions. Users should remove such configurations before proceeding with the limited live migration.
 

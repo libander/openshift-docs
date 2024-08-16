@@ -112,14 +112,20 @@ Dir: installing
 Distros: openshift-origin,openshift-enterprise,openshift-webscale
 Topics:
 - Name: Installation overview
-  File: index
-  Distros: openshift-origin,openshift-enterprise
-- Name: Selecting an installation method and preparing a cluster
-  File: installing-preparing
-  Distros: openshift-origin,openshift-enterprise
-- Name: Cluster capabilities
-  File: cluster-capabilities
-  Distros: openshift-origin,openshift-enterprise
+  Dir: overview
+  Topics:
+  - Name: Installation overview
+    File: index
+    Distros: openshift-origin,openshift-enterprise
+  - Name: Selecting an installation method and preparing a cluster
+    File: installing-preparing
+    Distros: openshift-origin,openshift-enterprise
+  - Name: Cluster capabilities
+    File: cluster-capabilities
+    Distros: openshift-origin,openshift-enterprise
+  - Name: Support for FIPS cryptography
+    File: installing-fips
+    Distros: openshift-enterprise,openshift-online
 - Name: Disconnected installation mirroring
   Dir: disconnected_install
   Distros: openshift-origin,openshift-enterprise
@@ -176,7 +182,7 @@ Topics:
       File: installing-aws-localzone
     - Name: Installing a cluster with compute nodes on Wavelength Zones
       File: installing-aws-wavelength-zone
-    - Name: Installing a cluster with compute nodes on Outposts
+    - Name: Extending an AWS VPC cluster into an AWS Outpost
       File: installing-aws-outposts
   - Name: User-provisioned infrastructure
     Dir: upi
@@ -200,33 +206,43 @@ Topics:
   Dir: installing_azure
   Distros: openshift-origin,openshift-enterprise
   Topics:
-  - Name: Preparing to install on Azure
+  - Name: Installation methods
     File: preparing-to-install-on-azure
   - Name: Configuring an Azure account
     File: installing-azure-account
-  - Name: Enabling user-managed encryption on Azure
-    File: enabling-user-managed-encryption-azure
-  - Name: Installing a cluster quickly on Azure
-    File: installing-azure-default
-  - Name: Installing a cluster on Azure with customizations
-    File: installing-azure-customizations
-  - Name: Installing a cluster on Azure with network customizations
-    File: installing-azure-network-customizations
-  - Name: Installing a cluster on Azure into an existing VNet
-    File: installing-azure-vnet
-  - Name: Installing a private cluster on Azure
-    File: installing-azure-private
-  - Name: Installing a cluster on Azure into a government region
-    File: installing-azure-government-region
-  - Name: Installing a cluster on Azure in a restricted network with user-provisioned infrastructure
-    File: installing-restricted-networks-azure-user-provisioned
-  - Name: Installing a cluster on Azure using ARM templates
-    File: installing-azure-user-infra
-  - Name: Installing a cluster on Azure in a restricted network
-    File: installing-restricted-networks-azure-installer-provisioned
-  - Name: Installing a three-node cluster on Azure
+  - Name: Installer-provisioned infrastructure
+    Dir: ipi
+    Distros: openshift-origin,openshift-enterprise
+    Topics:
+    - Name: Preparing to install a cluster
+      File: installing-azure-preparing-ipi
+    - Name: Installing a cluster
+      File: installing-azure-default
+    - Name: Installing a cluster with customizations
+      File: installing-azure-customizations
+    - Name: Installing a cluster with network customizations
+      File: installing-azure-network-customizations
+    - Name: Installing a cluster in a restricted network
+      File: installing-restricted-networks-azure-installer-provisioned
+    - Name: Installing a cluster into an existing VNet
+      File: installing-azure-vnet
+    - Name: Installing a private cluster
+      File: installing-azure-private
+    - Name: Installing a cluster into a government region
+      File: installing-azure-government-region
+  - Name: User-provisioned infrastructure
+    Dir: upi
+    Distros: openshift-origin,openshift-enterprise
+    Topics:
+    - Name: Preparing to install a cluster
+      File: installing-azure-preparing-upi
+    - Name: Installing a cluster in a restricted network with user-provisioned infrastructure
+      File: installing-restricted-networks-azure-user-provisioned
+    - Name: Installing a cluster using ARM templates
+      File: installing-azure-user-infra
+  - Name: Installing a three-node cluster
     File: installing-azure-three-node
-  - Name: Uninstalling a cluster on Azure
+  - Name: Uninstalling a cluster
     File: uninstalling-cluster-azure
   - Name: Installation configuration parameters for Azure
     File: installation-config-parameters-azure
@@ -382,6 +398,8 @@ Topics:
     File: ipi-install-prerequisites
   - Name: Setting up the environment for an OpenShift installation
     File: ipi-install-installation-workflow
+  - Name: Installing a cluster
+    File: ipi-install-installing-a-cluster
   - Name: Postinstallation configuration
     File: ipi-install-post-installation-configuration
   - Name: Expanding the cluster
@@ -466,6 +484,8 @@ Topics:
     File: installing-openstack-user
   - Name: Installing a cluster on OpenStack in a restricted network
     File: installing-openstack-installer-restricted
+  - Name: Configuring network settings after installing OpenStack
+    File: installing-openstack-network-config
   - Name: OpenStack Cloud Controller Manager reference guide
     File: installing-openstack-cloud-config-reference
   - Name: Deploying on OpenStack with rootVolume and etcd on local disk
@@ -553,15 +573,15 @@ Topics:
   - Name: Enabling Linux control group version 1 (cgroup v1)
     File: enabling-cgroup-v1
     Distros: openshift-enterprise
-- Name: Validating an installation
-  File: validating-an-installation
-  Distros: openshift-origin,openshift-enterprise
-- Name: Troubleshooting installation issues
-  File: installing-troubleshooting
-  Distros: openshift-origin,openshift-enterprise
-- Name: Support for FIPS cryptography
-  File: installing-fips
-  Distros: openshift-enterprise,openshift-online
+- Name: Validation and troubleshooting
+  Dir: validation_and_troubleshooting
+  Topics:
+  - Name: Validating an installation
+    File: validating-an-installation
+    Distros: openshift-origin,openshift-enterprise
+  - Name: Troubleshooting installation issues
+    File: installing-troubleshooting
+    Distros: openshift-origin,openshift-enterprise
 ---
 Name: Postinstallation configuration
 Dir: post_installation_configuration
@@ -574,7 +594,7 @@ Topics:
   Distros: openshift-enterprise,openshift-origin
   File: configuring-private-cluster
 - Name: Bare metal configuration
-  File: bare-metal-configuration
+  File: post-install-bare-metal-configuration
 - Name: Configuring multi-architecture compute machines on an OpenShift cluster
   Dir: configuring-multi-arch-compute-machines
   Distros: openshift-enterprise
@@ -609,10 +629,12 @@ Topics:
   File: cluster-tasks
 - Name: Node tasks
   File: node-tasks
-- Name: Network configuration
-  File: network-configuration
+- Name: Postinstallation network configuration
+  File: post-install-network-configuration
+- Name: Configuring image streams and image registries
+  File: post-install-image-config
 - Name: Storage configuration
-  File: storage-configuration
+  File: post-install-storage-configuration
 - Name: Preparing for users
   File: preparing-for-users
 - Name: Changing the cloud provider credentials configuration
@@ -628,14 +650,9 @@ Topics:
   File: ibmz-post-install
 - Name: Regions and zones for a VMware vCenter
   File: post-install-vsphere-zones-regions-configuration
-- Name: Adding failure domains to an existing Nutanix cluster
-  File: adding-nutanix-failure-domains
-  Distros: openshift-origin,openshift-enterprise
 - Name: AWS Local Zone or Wavelength Zone tasks
   File: aws-compute-edge-zone-tasks
   Distros: openshift-enterprise
-- Name: Extending an AWS VPC cluster into an AWS Outpost
-  File: configuring-aws-outposts
 ---
 Name: Updating clusters
 Dir: updating
@@ -1126,6 +1143,8 @@ Topics:
     File: cert-manager-operator-issuer-acme
   - Name: Configuring certificates with an issuer
     File: cert-manager-creating-certificate
+  - Name: Securing routes with the cert-manager Operator for Red Hat OpenShift
+    File: cert-manager-securing-routes
   - Name: Monitoring the cert-manager Operator for Red Hat OpenShift
     File: cert-manager-monitoring
   - Name: Configuring log levels for cert-manager and the cert-manager Operator for Red Hat OpenShift
@@ -1284,6 +1303,8 @@ Topics:
       File: ovn-k-egress-nodes-networks-peer
     - Name: Troubleshooting
       File: ovn-k-anp-troubleshooting
+    - Name: Best practices
+      File: ovn-k-anp-recommended-practices
   - Name: Network policy
     Dir: network_policy
     Distros: openshift-enterprise, openshift-origin
@@ -1329,13 +1350,11 @@ Topics:
 - Name: Understanding the Ingress Operator
   File: ingress-operator
   Distros: openshift-enterprise,openshift-origin
-- Name: Ingress sharding
-  File: ingress-sharding
 - Name: Configuring the Ingress Controller for manual DNS management
   File: ingress-controller-dnsmgt
   Distros: openshift-enterprise,openshift-origin
 - Name: Configuring the Ingress Controller endpoint publishing strategy
-  File: nw-ingress-controller-endpoint-publishing-strategies
+  File: nw-configuring-ingress-controller-endpoint-publishing-strategy
   Distros: openshift-enterprise,openshift-origin
 - Name: Verifying connectivity to an endpoint
   File: verifying-connectivity-endpoint
@@ -1993,8 +2012,6 @@ Topics:
       File: olmv1-operator-controller
     - Name: RukPak
       File: olmv1-rukpak
-    - Name: Dependency resolution
-      File: olmv1-dependency
     - Name: Catalogd
       File: olmv1-catalogd
   - Name: Installing an Operator from a catalog
@@ -2392,6 +2409,8 @@ Topics:
 - Name: High availability for hosted control planes
   Dir: hcp_high_availability
   Topics:
+  - Name: About high availability for hosted control planes
+    File: about-hcp-ha
   - Name: Recovering a failing etcd cluster
     File: hcp-recovering-etcd-cluster
   - Name: Backing up and restoring etcd in an on-premise environment
@@ -2400,6 +2419,8 @@ Topics:
     File: hcp-backup-restore-aws
   - Name: Disaster recovery for a hosted cluster in AWS
     File: hcp-disaster-recovery-aws
+  - Name: Disaster recovery for a hosted cluster by using OADP
+    File: hcp-disaster-recovery-oadp
 - Name: Troubleshooting hosted control planes
   File: hcp-troubleshooting
 ---
@@ -2635,9 +2656,8 @@ Topics:
     File: nodes-sno-worker-nodes
 - Name: Node metrics dashboard
   File: nodes-dashboard-using
-# Hiding this section until 4.17.
-#- Name: Manage secure signatures with sigstore
-#  File: nodes-sigstore-using
+- Name: Manage secure signatures with sigstore
+  File: nodes-sigstore-using
 ---
 Name: Windows Container Support for OpenShift
 Dir: windows_containers
@@ -2694,6 +2714,8 @@ Topics:
   Topics:
   - Name: Monitoring overview
     File: monitoring-overview
+  - Name: Common monitoring configuration scenarios
+    File: common-monitoring-configuration-scenarios
   - Name: Configuring the monitoring stack
     File: configuring-the-monitoring-stack
   - Name: Enabling monitoring for user-defined projects
@@ -2851,12 +2873,7 @@ Topics:
   Distros: openshift-enterprise
   Topics:
   - Name: Release notes
-    Dir: distr_tracing_rn
-    Topics:
-    - Name: Distributed tracing 3.2.1
-      File: distr-tracing-rn-3-2-1
-    - Name: Past releases
-      File: distr-tracing-rn-past-releases
+    File: distr-tracing-rn
   - Name: Distributed tracing architecture
     Dir: distr_tracing_arch
     Topics:
@@ -2889,12 +2906,7 @@ Topics:
   Distros: openshift-enterprise
   Topics:
   - Name: Release notes
-    Dir: otel_rn
-    Topics:
-    - Name: Red Hat build of OpenTelemetry 3.2.1
-      File: otel-rn-3-2-1
-    - Name: Past releases
-      File: otel-rn-past-releases
+    File: otel-rn
   - Name: Installing
     File: otel-installing
   - Name: Configuring the Collector
@@ -3016,6 +3028,38 @@ Topics:
     File: recommended-infrastructure-practices
   - Name: Recommended etcd practices
     File: recommended-etcd-practices
+- Name: Reference design specifications
+  Dir: telco_ref_design_specs
+  Distros: openshift-origin,openshift-enterprise
+  Topics:
+  - Name: Telco reference design specifications
+    File: telco-ref-design-specs-overview
+  - Name: Telco RAN DU reference design specification
+    Dir: ran
+    Topics:
+    - Name: Telco RAN DU reference design overview
+      File: telco-ran-ref-design-spec
+    - Name: Telco RAN DU use model overview
+      File: telco-ran-du-overview
+    - Name: RAN DU reference design components
+      File: telco-ran-ref-du-components
+    - Name: RAN DU reference design configuration CRs
+      File: telco-ran-ref-du-crs
+    - Name: Telco RAN DU software specifications
+      File: telco-ran-ref-software-artifacts
+  - Name: Telco core reference design specification
+    Dir: core
+    Topics:
+    - Name: Telco core reference design overview
+      File: telco-core-rds-overview
+    - Name: Telco core use model overview
+      File: telco-core-rds-use-cases
+    - Name: Core reference design components
+      File: telco-core-ref-design-components
+    - Name: Core reference design configuration CRs
+      File: telco-core-ref-crs
+    - Name: Telco core software specifications
+      File: telco-core-ref-software-artifacts
 - Name: Planning your environment according to object maximums
   File: planning-your-environment-according-to-object-maximums
   Distros: openshift-origin,openshift-enterprise
@@ -3133,51 +3177,52 @@ Topics:
     Dir: preparing_for_image_based_upgrade
     Distros: openshift-origin,openshift-enterprise
     Topics:
-    - Name: Configuring a shared container directory for the image-based upgrade
-      File: cnf-image-based-upgrade-shared-container-image
+    - Name: Configuring a shared container partition for the image-based upgrade
+      File: cnf-image-based-upgrade-shared-container-partition
     - Name: Installing Operators for the image-based upgrade
       File: cnf-image-based-upgrade-install-operators
-    - Name: Generating a seed image for the image-based upgrade with Lifecycle Agent
+    - Name: Generating a seed image for the image-based upgrade with the Lifecycle Agent
       File: cnf-image-based-upgrade-generate-seed
-    - Name: Creating ConfigMap objects for the image-based upgrade with Lifecycle Agent
+    - Name: Creating ConfigMap objects for the image-based upgrade with the Lifecycle Agent
       File: cnf-image-based-upgrade-prep-resources
     - Name: Creating ConfigMap objects for the image-based upgrade with Lifecycle Agent using GitOps ZTP
       File: ztp-image-based-upgrade-prep-resources
-  - Name: Performing an image-based upgrade for single-node OpenShift clusters
+  - Name: Performing an image-based upgrade for single-node OpenShift clusters with the Lifecycle Agent
     File: cnf-image-based-upgrade-base
   - Name: Performing an image-based upgrade for single-node OpenShift clusters using GitOps ZTP
     File: ztp-image-based-upgrade
----
-Name: Reference design specifications
-Dir: telco_ref_design_specs
-Distros: openshift-telco
-Topics:
-- Name: Telco reference design specifications
-  File: telco-ref-design-specs-overview
-- Name: Telco RAN DU reference design specification
-  Dir: ran
-  Topics:
-  - Name: Telco RAN DU reference design overview
-    File: telco-ran-ref-design-spec
-  - Name: Telco RAN DU use model overview
-    File: telco-ran-du-overview
-  - Name: RAN DU reference design components
-    File: telco-ran-ref-du-components
-  - Name: RAN DU reference design configuration CRs
-    File: telco-ran-ref-du-crs
-  - Name: Telco RAN DU software specifications
-    File: telco-ran-ref-software-artifacts
-- Name: Telco core reference design specification
-  Dir: core
-  Topics:
-  - Name: Telco core reference design overview
-    File: telco-core-rds-overview
-  - Name: Telco core use model overview
-    File: telco-core-rds-use-cases
-  - Name: Core reference design components
-    File: telco-core-ref-design-components
-  - Name: Core reference design configuration CRs
-    File: telco-core-ref-crs
+# Remove RDS from published docs until 4.16 RDS is released
+# ---
+# Name: Reference design specifications
+# Dir: telco_ref_design_specs
+# Distros: openshift-telco
+# Topics:
+# - Name: Telco reference design specifications
+#   File: telco-ref-design-specs-overview
+# - Name: Telco RAN DU reference design specification
+#   Dir: ran
+#   Topics:
+#   - Name: Telco RAN DU reference design overview
+#     File: telco-ran-ref-design-spec
+#   - Name: Telco RAN DU use model overview
+#     File: telco-ran-du-overview
+#   - Name: RAN DU reference design components
+#     File: telco-ran-ref-du-components
+#   - Name: RAN DU reference design configuration CRs
+#     File: telco-ran-ref-du-crs
+#   - Name: Telco RAN DU software specifications
+#     File: telco-ran-ref-software-artifacts
+# - Name: Telco core reference design specification
+#   Dir: core
+#   Topics:
+#   - Name: Telco core reference design overview
+#     File: telco-core-rds-overview
+#   - Name: Telco core use model overview
+#     File: telco-core-rds-use-cases
+#   - Name: Core reference design components
+#     File: telco-core-ref-design-components
+#   - Name: Core reference design configuration CRs
+#     File: telco-core-ref-crs
 ---
 Name: Specialized hardware and driver enablement
 Dir: hardware_enablement
@@ -3210,6 +3255,8 @@ Topics:
   - Name: OADP release notes
     Dir: release-notes
     Topics:
+    - Name: OADP 1.4 release notes
+      File: oadp-1-4-release-notes
     - Name: OADP 1.3 release notes
       File: oadp-release-notes-1-3
     - Name: OADP 1.2 release notes
@@ -3997,6 +4044,16 @@ Topics:
   - Name: 'StatefulSet [apps/v1]'
     File: statefulset-apps-v1
 ---
+Name: Lightspeed
+Dir: lightspeed
+Distros: openshift-enterprise
+Topics:
+- Name: About Lightspeed
+  Dir: about
+  Topics:
+  - Name: OpenShift Lightspeed overview
+    File: ols-openshift-lightspeed-overview
+---
 Name: Service Mesh
 Dir: service_mesh
 Distros: openshift-enterprise
@@ -4032,6 +4089,10 @@ Topics:
     File: ossm-security
   - Name: Traffic management
     File: ossm-traffic-manage
+  - Name: Gateway migration
+    File: ossm-gateway-migration
+  - Name: Route migration
+    File: ossm-route-migration
   - Name: Metrics, logs, and traces
     File: ossm-observability
   - Name: Performance and scalability
@@ -4124,8 +4185,6 @@ Topics:
     Distros: openshift-origin
   - Name: virtctl and libguestfs
     File: virt-using-the-cli-tools
-  - Name: Web console overview
-    File: virt-web-console-overview
     Distros: openshift-enterprise
 - Name: Installing
   Dir: install
@@ -4155,6 +4214,8 @@ Topics:
     File: virt-post-install-network-config
   - Name: Storage configuration
     File: virt-post-install-storage-config
+  - Name: Configuring higher VM workload density
+    File: virt-configuring-higher-vm-workload-density
 - Name: Updating
   Dir: updating
   Topics:
@@ -4251,8 +4312,8 @@ Topics:
       File: virt-vm-control-plane-tuning
     - Name: Assigning compute resources
       File: virt-assigning-compute-resources
-    - Name: Running real-time workloads
-      File: virt-configuring-cluster-realtime-workloads
+#    - Name: Running real-time workloads
+#      File: virt-configuring-cluster-realtime-workloads
     - Name: About multi-queue functionality
       File: virt-about-multi-queue
   - Name: VM disks

@@ -2,7 +2,7 @@
 // * edge_computing/image-based-upgrade/cnf-preparing-for-image-based-upgrade.adoc
 
 :_mod-docs-content-type: PROCEDURE
-[id="ztp-image-based-upgrade-seed-generation_{context}"]
+[id="cnf-image-based-upgrade-generate-seed-image_{context}"]
 = Generating a seed image with the {lcao}
 
 Use the {lcao} to generate the seed image with the `SeedGenerator` CR. The Operator checks for required system configurations, performs any necessary system cleanup before generating the seed image, and launches the image generation. The seed image generation includes the following tasks:
@@ -18,13 +18,13 @@ Use the {lcao} to generate the seed image with the `SeedGenerator` CR. The Opera
 .Prerequisites
 
 * Configure a shared container directory on the seed cluster.
-* Install the OADP Operator and the {lcao} on the seed cluster.
+* Install the {oadp-short} Operator and the {lcao} on the seed cluster.
 
 .Procedure
 
-. Detach the cluster from the hub to delete any cluster-specific resources from the seed cluster that must not be in the seed image:
+. Detach the cluster from the hub to delete any {rh-rhacm}-specific resources from the seed cluster that must not be in the seed image:
 
-.. If you are using {rh-rhacm}, manually detach the seed cluster by running the following command:
+.. Manually detach the seed cluster by running the following command:
 +
 [source,terminal]
 ----
@@ -52,7 +52,7 @@ generators:
 +
 The ArgoCD pipeline detects the changes and removes the managed cluster.
 
-. Create the `Secret`:
+. Create the `Secret` object so that you can push the seed image to your registry.
 
 .. Create the authentication file by running the following commands:
 +
