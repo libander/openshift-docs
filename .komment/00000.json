@@ -1,0 +1,449 @@
+[
+  {
+    "name": "build_for_portal.py",
+    "path": "build_for_portal.py",
+    "content": {
+      "structured": {
+        "description": "A tool that builds and synchronizes documentation files from an upstream source repository into a local directory structure for distribution in various formats such as HTML, PDF, and EPUB. The process involves fetching the latest sources, filtering books based on the specified distribution, building master files, reformating data for Drupal, and pushing changes back to GitLab repositories.",
+        "items": [
+          {
+            "id": "6483b725-6e6f-b3af-7249-43be1b68f367",
+            "ancestors": [],
+            "description": "Defines and returns an instance of an ArgumentParser, which allows for parsing command-line arguments. It sets up various command-line options with default values and descriptions, enabling the user to customize the behavior of a program or script.",
+            "params": [],
+            "returns": {
+              "type_name": "argparseArgumentParser",
+              "description": "An instance of ArgumentParser. This object will be used to parse command-line arguments and provide help messages when necessary."
+            },
+            "usage": {
+              "language": "python",
+              "code": "parser = setup_parser()\nargs = parser.parse_args([\"--distro\", \"openshift-enterprise\"])\n",
+              "description": ""
+            },
+            "name": "setup_parser",
+            "location": {
+              "start": 126,
+              "insert": 127,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "function",
+            "length": 40,
+            "docLength": null
+          },
+          {
+            "id": "e1320c24-5e9f-23ae-3347-d0fc4de67b9f",
+            "ancestors": [
+              "1cd2200b-fb3f-4eb6-9147-990d3b577a0a"
+            ],
+            "description": "Constructs a string representing a directory entry based on its name and depth. It appends this string to the `master_entries` list if either the `include_name` flag is set or the depth exceeds zero.",
+            "params": [
+              {
+                "name": "dir_node",
+                "type_name": "Dict[str, Any]",
+                "description": "Expected to contain directory information, specifically 'Name' attribute which represents the name of the directory."
+              },
+              {
+                "name": "parent_dir",
+                "type_name": "str",
+                "description": "Passed as an argument to this callback function, representing the current directory being processed."
+              },
+              {
+                "name": "depth",
+                "type_name": "int",
+                "description": "0-based, indicating the current directory level being processed. It affects the indentation of the directory name in the output list by adding leading spaces based on its value."
+              }
+            ],
+            "returns": null,
+            "usage": {
+              "language": "python",
+              "code": "dir_node = {\"Name\": \"Documents\"}\nparent_dir = \"\"\ndepth = 0\ndir_callback(dir_node, parent_dir, depth)\nmaster_entries.append(...)",
+              "description": ""
+            },
+            "name": "dir_callback",
+            "location": {
+              "start": 387,
+              "insert": 388,
+              "offset": " ",
+              "indent": 8,
+              "comment": null
+            },
+            "item_type": "function",
+            "length": 5,
+            "docLength": null
+          },
+          {
+            "id": "09ffafc5-fda6-5bb7-404d-af1a905ce7bc",
+            "ancestors": [
+              "1cd2200b-fb3f-4eb6-9147-990d3b577a0a"
+            ],
+            "description": "Processes a topic node and adds its book file path to the master entries list as an include statement. It handles specific cases for all-in-one mode and comment files, appending additional comments as needed.",
+            "params": [
+              {
+                "name": "topic_node",
+                "type_name": "Dict[any, any]",
+                "description": "Expected to contain information about a topic node."
+              },
+              {
+                "name": "parent_dir",
+                "type_name": "str",
+                "description": "Used as the parent directory to construct the full path for the book file. It is joined with the topic node's \"File\" attribute and \".adoc\" extension to form the full file path."
+              },
+              {
+                "name": "depth",
+                "type_name": "int",
+                "description": "Used to calculate the level offset for an Asciidoctor include directive. This level offset determines the nesting level of included files in the generated documentation."
+              }
+            ],
+            "returns": null,
+            "usage": {
+              "language": "python",
+              "code": "topic_node = {\"File\": \"main\"}\nparent_dir = \"/path/to/main\"\nbook_dir = \"/path/to/book\"\nall_in_one = True\nCOMMENT_FILES = [\"file1\", \"file2\"]\n\ntopic_callback(topic_node, parent_dir, 0)",
+              "description": ""
+            },
+            "name": "topic_callback",
+            "location": {
+              "start": 393,
+              "insert": 394,
+              "offset": " ",
+              "indent": 8,
+              "comment": null
+            },
+            "item_type": "function",
+            "length": 11,
+            "docLength": null
+          },
+          {
+            "id": "a211b250-8c76-b3be-8449-7f822234c1cb",
+            "ancestors": [
+              "c24a6808-bdb8-f38e-1041-7a069d23c354"
+            ],
+            "description": "Traverses a directory tree and copies all image files from subdirectories to a specified destination directory (`dest_dir`). It takes three parameters: the current directory node, its parent directory, and the current depth.",
+            "params": [
+              {
+                "name": "dir_node",
+                "type_name": "Dict[any, any]",
+                "description": "Expected to contain information about a directory node in a file system tree structure. It is assumed that this dictionary contains key-value pairs for \"Dir\" and possibly other relevant details."
+              },
+              {
+                "name": "parent_dir",
+                "type_name": "str",
+                "description": "The directory path from which the current directory node (`dir_node`) is located, used as the base for constructing file paths."
+              },
+              {
+                "name": "depth",
+                "type_name": "int",
+                "description": "Used to track the level of recursion when traversing directory trees."
+              }
+            ],
+            "returns": null,
+            "usage": {
+              "language": "python",
+              "code": "dir_nodes = [{\"Dir\": \"dir1\"}, {\"Dir\": \"dir2\"}]\ndest_dir = \"/path/to/destination\"\nfor node in dir_nodes:\n    dir_callback(node, \"/\", 0)\n",
+              "description": ""
+            },
+            "name": "dir_callback",
+            "location": {
+              "start": 470,
+              "insert": 471,
+              "offset": " ",
+              "indent": 8,
+              "comment": null
+            },
+            "item_type": "function",
+            "length": 8,
+            "docLength": null
+          },
+          {
+            "id": "ca792679-ca97-4a84-de47-06200812ffaf",
+            "ancestors": [
+              "b7b7e365-d519-ef80-c44c-a0aa63921384"
+            ],
+            "description": "Creates a destination directory path by joining the `dest_dir`, `parent_dir`, and `dir_node[\"Dir\"]`. It then ensures that the created directory exists using the `ensure_directory` function.",
+            "params": [
+              {
+                "name": "dir_node",
+                "type_name": "Dict[any, any]",
+                "description": "Assumed to be a node from a directory tree, containing information such as the name of the directory (`\"Dir\"`), its children, and possibly other relevant data."
+              },
+              {
+                "name": "parent_dir",
+                "type_name": "str",
+                "description": "Used to construct the destination directory path by joining it with the current directory (`dir_node`) and the destination root directory (`dest_dir`)."
+              },
+              {
+                "name": "depth",
+                "type_name": "int",
+                "description": "Used to represent the level of depth for the current directory being processed. It does not seem to have any direct effect on the function's behavior, but it might be used elsewhere in the code."
+              }
+            ],
+            "returns": null,
+            "usage": {
+              "language": "python",
+              "code": "dir_node = {\"Dir\": \"new_dir\"}\nparent_dir = \"source\"\ndest_dir = \"destination\"\ndepth = 1\ndir_callback(dir_node, parent_dir, depth)",
+              "description": ""
+            },
+            "name": "dir_callback",
+            "location": {
+              "start": 488,
+              "insert": 489,
+              "offset": " ",
+              "indent": 8,
+              "comment": null
+            },
+            "item_type": "function",
+            "length": 3,
+            "docLength": null
+          },
+          {
+            "id": "59a30cb9-bbe4-3a8e-c241-1ed7911ead22",
+            "ancestors": [
+              "b7b7e365-d519-ef80-c44c-a0aa63921384"
+            ],
+            "description": "Copies an Adoc file from a source directory to a destination directory based on topic and parent directory information provided in the `topic_node` dictionary. It also maintains the directory structure during the copying process.",
+            "params": [
+              {
+                "name": "topic_node",
+                "type_name": "Dict",
+                "description": "Expected to contain keys \"File\" that specifies the name of an Asciidoc file, representing a topic or chapter within the document."
+              },
+              {
+                "name": "parent_dir",
+                "type_name": "str",
+                "description": "Used as a directory name within both source (`node_src_dir`) and destination (`node_dest_dir`) paths, allowing for hierarchical organization of files in the topic node."
+              },
+              {
+                "name": "depth",
+                "type_name": "int",
+                "description": "Used to calculate the path of the source directory for each topic node based on its depth from the root."
+              }
+            ],
+            "returns": null,
+            "usage": {
+              "language": "python",
+              "code": "topic_node = {\"File\": \"my_file\"}\nparent_dir = \"path/to/parent\"\ndepth = 1\ntopic_callback(topic_node, parent_dir, depth)",
+              "description": ""
+            },
+            "name": "topic_callback",
+            "location": {
+              "start": 492,
+              "insert": 493,
+              "offset": " ",
+              "indent": 8,
+              "comment": null
+            },
+            "item_type": "function",
+            "length": 8,
+            "docLength": null
+          },
+          {
+            "id": "e5a5f5a5-c911-958e-7a4f-bf0f9cdce980",
+            "ancestors": [],
+            "description": "Retrieves the name of a book from a specified directory. It searches through a list of book nodes and returns the matching book name if found; otherwise, it logs an error and returns the directory path.",
+            "params": [
+              {
+                "name": "dir",
+                "type_name": "str",
+                "description": "Expected to match with the \"Dir\" key value in one of the book nodes in the `info[\"book_nodes\"]` list."
+              },
+              {
+                "name": "src_file",
+                "type_name": "str",
+                "description": "Passed to the log error message. It represents the source file name, used as context for error logging when a book is not found for a given directory."
+              },
+              {
+                "name": "info",
+                "type_name": "Dict[any, any]",
+                "description": "Expected to have a key named \"book_nodes\" with values that are dictionaries having keys \"Dir\" and \"Name\"."
+              }
+            ],
+            "returns": {
+              "type_name": "str|None",
+              "description": "1) the name of a book if the directory is found, or 2) the directory itself if no matching book is found and an error message has been logged."
+            },
+            "usage": {
+              "language": "python",
+              "code": "info = {\"book_nodes\": [{\"Dir\": \"dir1\", \"Name\": \"Book1\"}, {\"Dir\": \"dir2\", \"Name\": \"Book2\"}]}\nsrc_file = \"file.txt\"\nresult = dir_to_book_name(\"dir1\", src_file, info)\n",
+              "description": ""
+            },
+            "name": "dir_to_book_name",
+            "location": {
+              "start": 739,
+              "insert": 741,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "function",
+            "length": 12,
+            "docLength": null
+          },
+          {
+            "id": "5527b173-9819-8288-bb4a-0cb5b2b70b61",
+            "ancestors": [
+              "0da26043-68d2-308e-2043-8ae56108c114"
+            ],
+            "description": "Extracts file IDs from a source file and appends them to a list called `book_ids`. The file is located by joining a parent directory with the name of a topic node, adding \".adoc\" as the file extension.",
+            "params": [
+              {
+                "name": "topic_node",
+                "type_name": "Dict",
+                "description": "Expected to contain a set of key-value pairs, where at least one key is \"File\", which represents the path of an AsciiDoc file."
+              },
+              {
+                "name": "parent_dir",
+                "type_name": "str",
+                "description": "Used to construct the path to a source file by joining it with the \"File\" attribute of the `topic_node`."
+              },
+              {
+                "name": "depth",
+                "type_name": "int",
+                "description": "Used as an input for the recursive callback process to traverse the topic tree, representing the current level of nesting."
+              }
+            ],
+            "returns": null,
+            "usage": {
+              "language": "python",
+              "code": "topic_node = {\"File\": \"my_topic\"}\nparent_dir = \"/path/to/my/adoc/files\"\nbook_ids = []\ntopic_callback(topic_node, parent_dir, 0)",
+              "description": ""
+            },
+            "name": "topic_callback",
+            "location": {
+              "start": 910,
+              "insert": 911,
+              "offset": " ",
+              "indent": 8,
+              "comment": null
+            },
+            "item_type": "function",
+            "length": 4,
+            "docLength": null
+          },
+          {
+            "id": "b7b3ec81-e926-1092-eb47-8bd398ba8a47",
+            "ancestors": [
+              "6d8ae864-af5c-bdbc-f74e-3a7f52dda325"
+            ],
+            "description": "Generates a source file path and maps it to an ID based on the topic node's name. It uses the parent directory and topic node's \"File\" attribute to create the source file path, then associates it with an ID using the `build_file_id` function.",
+            "params": [
+              {
+                "name": "topic_node",
+                "type_name": "Dict[str, Any]",
+                "description": "Assumed to contain key-value pairs representing metadata about a topic in an AsciiDoc document."
+              },
+              {
+                "name": "parent_dir",
+                "type_name": "str",
+                "description": "Used to construct the full path of the source file by joining it with the topic node's \"File\" attribute."
+              },
+              {
+                "name": "depth",
+                "type_name": "int",
+                "description": "Not used within the given code snippet. It likely serves as an optional input to control recursion or indentation in the file generation process, but its purpose remains unclear without additional context."
+              }
+            ],
+            "returns": null,
+            "usage": {
+              "language": "python",
+              "code": "topic_node = {\"File\": \"main\", \"Name\": \"Introduction\"}\nparent_dir = \"/path/to/parent/directory\"\ndepth = 0\nfile_to_id_map = {}\nexisting_ids = set()\ntopic_callback(topic_node, parent_dir, depth)\n",
+              "description": ""
+            },
+            "name": "topic_callback",
+            "location": {
+              "start": 926,
+              "insert": 927,
+              "offset": " ",
+              "indent": 8,
+              "comment": null
+            },
+            "item_type": "function",
+            "length": 5,
+            "docLength": null
+          },
+          {
+            "id": "481aba77-e533-89bf-ca48-8aafbab2b315",
+            "ancestors": [],
+            "description": "Synchronizes directories by removing files and subdirectories from the right directory that exist only on the left side, copying or moving files and subdirectories that are common or exist only on the left side to the right side.",
+            "name": "_sync_directories_dircmp",
+            "location": {
+              "start": 1064,
+              "insert": 1066,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "function",
+            "length": 18,
+            "docLength": null
+          },
+          {
+            "id": "e2e45fd8-6bb8-aeb3-6742-87fe4cf73a64",
+            "ancestors": [],
+            "description": "Reads a configuration file and parses its contents based on the provided distribution and version. It extracts relevant information from the configuration file into a dictionary, which represents the repository URLs for the specified combination of distro and version.",
+            "params": [
+              {
+                "name": "config_file",
+                "type_name": "str",
+                "description": "The path to the configuration file that needs to be read for parsing the repository configuration."
+              },
+              {
+                "name": "distro",
+                "type_name": "str",
+                "description": "Expected to be a name of a distribution, for example, \"ubuntu\" or \"centos\". It is used to construct a section name for parsing configuration from the config file."
+              },
+              {
+                "name": "version",
+                "type_name": "str",
+                "description": "Used as part of the name of a section in the config file that it reads from."
+              }
+            ],
+            "returns": {
+              "type_name": "Dict[str,str]",
+              "description": "A dictionary containing URLs for different repository keys. The keys are obtained from the section name specified by the distro and version parameters."
+            },
+            "usage": {
+              "language": "python",
+              "code": "parse_repo_config('path/to/config/file', 'ubuntu', '20.04')",
+              "description": ""
+            },
+            "name": "parse_repo_config",
+            "location": {
+              "start": 1113,
+              "insert": 1115,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "function",
+            "length": 15,
+            "docLength": null
+          },
+          {
+            "id": "0c6d6139-3e8c-fb9b-194c-1f6969f91c94",
+            "ancestors": [],
+            "description": "Processes command-line arguments to build and package Drupal files. It fetches upstream sources, parses a configuration file, builds files, reorganizes them for Drupal, and pushes changes back to GitLab if necessary.",
+            "params": [],
+            "returns": null,
+            "usage": {
+              "language": "python",
+              "code": "if __name__ == \"__main__\":\n    main(title='Sample Title', \n         author='Author Name', \n         product='Product Name', \n         distro='Distro', \n         version='Version Number', \n         no_upstream_fetch=False, \n         all_in_one=True, \n         push=True)\n",
+              "description": ""
+            },
+            "name": "main",
+            "location": {
+              "start": 1131,
+              "insert": 1132,
+              "offset": " ",
+              "indent": 4,
+              "comment": null
+            },
+            "item_type": "function",
+            "length": 74,
+            "docLength": null
+          }
+        ]
+      }
+    }
+  }
+]
