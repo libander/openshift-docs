@@ -1,0 +1,206 @@
+:_mod-docs-content-type: ASSEMBLY
+include::_attributes/common-attributes.adoc[]
+[id="log6x-about"]
+= Logging 6.0
+:context: logging-6x
+
+toc::[]
+
+The `ClusterLogForwarder` custom resource (CR) is the central configuration point for log collection and forwarding.
+
+== Service account
+This release of Cluster Logging requires administrators to explicitly grant log collection permissions to the service account associated with *ClusterLogForwarder*. This was not required in previous releases for the legacy logging scenario consisting of a *ClusterLogging* and, optionally, a *ClusterLogForwarder.logging.openshift.io* resource.
+
+To use the existing service account (that is, `logcollector`) from a previous release, create the following *ClusterRoleBinding*:
+
+[source,terminal]
+----
+$ oc adm policy add-cluster-role-to-user collect-application-logs system:serviceaccount:openshift-logging:logcollector
+$ oc adm policy add-cluster-role-to-user collect-infrastructure-logs system:serviceaccount:openshift-logging:logcollector
+----
+
+Additionally, create the following *ClusterRoleBinding* if collecting audit logs:
+
+[source,terminal]
+----
+$ oc adm policy add-cluster-role-to-user collect-audit-logs system:serviceaccount:openshift-logging:logcollector
+----
+
+== role_binding.yaml
+The role_binding.yaml file binds the ClusterLogging operator's ClusterRole to a specific ServiceAccount, allowing it to manage Kubernetes resources cluster-wide.
+
+[source,yaml]
+----
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: manager-rolebinding
+roleRef:                                           <1>
+  apiGroup: rbac.authorization.k8s.io              <2>
+  kind: ClusterRole                                <3>
+  name: cluster-logging-operator                   <4>
+subjects:                                          <5>
+  - kind: ServiceAccount                           <6>
+    name: cluster-logging-operator                 <7>
+    namespace: openshift-logging                   <8>
+----
+<1> roleRef: References the ClusterRole to which the binding applies.
+<2> apiGroup: Indicates the RBAC API group, specifying that the ClusterRole is part of Kubernetes' RBAC system.
+<3> kind: Specifies that the referenced role is a ClusterRole, which applies cluster-wide.
+<4> name: The name of the ClusterRole being bound to the ServiceAccount, here cluster-logging-operator.
+<5> subjects: Defines the entities (users or service accounts) that are being granted the permissions from the ClusterRole.
+<6> kind: Specifies that the subject is a ServiceAccount.
+<7> Name: The name of the ServiceAccount being granted the permissions.
+<8> namespace: Indicates the namespace where the ServiceAccount is located.
+
+== write-application-logs-clusterrole.yaml
+The write-application-logs-clusterrole.yaml file defines a ClusterRole that grants permissions to write application logs to the Loki logging application.
+
+[source,yaml]
+----
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cluster-logging-write-application-logs
+rules:                                              <1>
+  - apiGroups:                                      <2>
+      - loki.grafana.com                            <3>
+    resources:                                      <4>
+      - application                                 <5>
+    resourceNames:                                  <6>
+      - logs                                        <7>
+    verbs:                                          <8>
+      - create                                      <9>
+Annotations
+<1> rules: Specifies the permissions granted by this ClusterRole.
+<2> apiGroups: Refers to the API group loki.grafana.com, which relates to the Loki logging system.
+<3> loki.grafana.com: The API group for managing Loki-related resources.
+<4> resources: The resource type that the ClusterRole grants permission to interact with.
+<5> application: Refers to the application resources within the Loki logging system.
+<6> resourceNames: Specifies the names of resources that this role can manage.
+<7> logs: Refers to the log resources that can be created.
+<8> verbs: The actions allowed on the resources.
+<9> create: Grants permission to create new logs in the Loki system.
+----
+
+== write-audit-logs-clusterrole.yaml
+The write-audit-logs-clusterrole.yaml file defines a ClusterRole that grants permissions to create audit logs in the Loki logging system.
+[source,yaml]
+----
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cluster-logging-write-audit-logs
+rules:                                              <1>
+  - apiGroups:                                      <2>
+      - loki.grafana.com                            <3>
+    resources:                                      <4>
+      - audit                                       <5>
+    resourceNames:                                  <6>
+      - logs                                        <7>
+    verbs:                                          <8>
+      - create                                      <9>
+----
+<1> rules: Defines the permissions granted by this ClusterRole.
+<2> apiGroups: Specifies the API group loki.grafana.com.
+<3> loki.grafana.com: The API group responsible for Loki logging resources.
+<4> resources: Refers to the resource type this role manages, in this case, audit.
+<5> audit: Specifies that the role manages audit logs within Loki.
+<6> resourceNames: Defines the specific resources that the role can access.
+<7> logs: Refers to the logs that can be managed under this role.
+<8> verbs: The actions allowed on the resources.
+<9> create: Grants permission to create new audit logs.
+
+== write-infrastructure-logs-clusterrole.yaml
+The write-infrastructure-logs-clusterrole.yaml file defines a ClusterRole that grants permission to create infrastructure logs in the Loki logging system.
+
+Sample YAML
+yaml
+----
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cluster-logging-write-infrastructure-logs
+rules:                                              <1>
+  - apiGroups:                                      <2>
+      - loki.grafana.com                            <3>
+    resources:                                      <4>
+      - infrastructure                              <5>
+    resourceNames:                                  <6>
+      - logs                                        <7>
+    verbs:                                          <8>
+      - create                                      <9>
+----
+<1> rules: Specifies the permissions this ClusterRole grants.
+<2> apiGroups: Specifies the API group for Loki-related resources.
+<3> loki.grafana.com: The API group managing the Loki logging system.
+<4> resources: Defines the resource type that this role can interact with.
+<5> infrastructure: Refers to infrastructure-related resources that this role manages.
+<6> resourceNames: Specifies the names of resources this role can manage.
+<7> logs: Refers to the log resources related to infrastructure.
+<8> verbs: The actions permitted by this role.
+<9> create: Grants permission to create infrastructure logs in the Loki system.
+
+== clusterlogforwarder-editor-role.yaml
+The clusterlogforwarder-editor-role.yaml file defines a ClusterRole that allows users to manage ClusterLogForwarders in OpenShift.
+
+
+[source,yaml]
+----
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: clusterlogforwarder-editor-role
+rules:                                              <1>
+  - apiGroups:                                      <2>
+      - observability.openshift.io                  <3>
+    resources:                                      <4>
+      - clusterlogforwarders                        <5>
+    verbs:                                          <6>
+      - create                                      <7>
+      - delete                                      <8>
+      - get                                         <9>
+      - list                                        <10>
+      - patch                                       <11>
+      - update                                      <12>
+      - watch                                       <13>
+----
+<1> rules: Specifies the permissions this ClusterRole grants.
+<2> apiGroups: Refers to the OpenShift-specific API group
+<3> obervability.openshift.io: The API group for managing observability resources, like logging.
+<4> resources: Specifies the resources this role can manage.
+<5> clusterlogforwarders: Refers to the log forwarding resources in OpenShift.
+<6> verbs: Specifies the actions allowed on the ClusterLogForwarders.
+<7> create: Grants permission to create new ClusterLogForwarders.
+<8> delete: Grants permission to delete existing ClusterLogForwarders.
+<9> get: Grants permission to retrieve information about specific ClusterLogForwarders.
+<10> list: Allows listing all ClusterLogForwarders.
+<11> patch: Grants permission to partially modify ClusterLogForwarders.
+<12> update: Grants permission to update existing ClusterLogForwarders.
+<13> watch: Grants permission to monitor changes to ClusterLogForwarders.
+
+
+
+
+== Inputs and Outputs
+
+Inputs specify the sources of logs to be forwarded. Logging 6.0 provides built-in input types: `application`, `infrastructure`, and `audit`, which select logs from different parts of your cluster. You can also define custom inputs based on namespaces or pod labels to fine-tune log selection.
+
+Outputs define the destinations where logs are sent. Each output type has its own set of configuration options, allowing you to customize the behavior and authentication settings.
+
+== Pipelines and Filters
+
+Pipelines determine the flow of logs from inputs to outputs. A pipeline consists of one or more input refs, output refs, and optional filter refs. Filters can be used to transform or drop log messages within a pipeline. The order of filters matters, as they are applied sequentially, and earlier filters can prevent log messages from reaching later stages.
+
+== Operator Behavior
+
+The Cluster Logging Operator manages the deployment and configuration of the collector based on the `ManagementState` field:
+
+- When set to `Managed` (default), the operator actively manages the logging resources to match the configuration defined in the spec.
+- When set to `UnManaged`, the operator does not take any action, allowing you to manually manage the logging components.
+
+
+== Validation
+Logging 6.0 includes extensive validation rules and default values to ensure a smooth and error-free configuration experience. The `ClusterLogForwarder` resource enforces validation checks on required fields, dependencies between fields, and the format of input values. Default values are provided for certain fields, reducing the need for explicit configuration in common scenarios.
+
+include::modules/log6x-oc-explain.adoc[leveloffset=+1]
